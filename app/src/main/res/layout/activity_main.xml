@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,15 +7,11 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/costsRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Привет мир!!"
-        android:textColor="@android:color/black"
-        android:textSize="30sp"
-        android:textStyle="bold|italic"
-        android:gravity="center"
-        android:layout_gravity="center"
-        />
+        android:layout_height="match_parent"/>
 
-</FrameLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
