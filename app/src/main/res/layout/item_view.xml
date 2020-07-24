@@ -14,7 +14,7 @@
         android:paddingBottom="29dp">
 
         <TextView
-            android:id="@+id/cellMoneyNameView"
+            android:id="@+id/name_view"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -25,7 +25,7 @@
             android:text="Олег наконец-то вернул долг"/>
 
         <TextView
-            android:id="@+id/cellMoneyValueView"
+            android:id="@+id/price_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-medium"
