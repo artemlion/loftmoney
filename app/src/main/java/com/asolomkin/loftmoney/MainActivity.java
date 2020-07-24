@@ -1,68 +1,84 @@
 package com.asolomkin.loftmoney;
 
+
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-
-import com.asolomkin.loftmoney.cells.money.MoneyAdapter;
-import com.asolomkin.loftmoney.cells.money.MoneyAdapterClick;
-import com.asolomkin.loftmoney.cells.money.MoneyCellModel;
+import android.view.View;
+import android.widget.Button;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final int REQUEST_CODE = 100 ;
     RecyclerView recyclerView;
-    MoneyAdapter moneyAdapter;
+    ItemsAdapter itemsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        recyclerView = findViewById(R.id.costsRecyclerView);
-        moneyAdapter = new MoneyAdapter();
-        moneyAdapter.setMoneyAdapterClick(new MoneyAdapterClick() {
+        Button callAddButton = findViewById(R.id.call_add_item_activity);
+        callAddButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onMoneyClick(MoneyCellModel moneyCellModel) {
-                Intent intent = new Intent(getApplicationContext(), AddItemActivity.class);
-                startActivity(intent);
+            public void onClick(final View v) {
+                startActivityForResult(new Intent(MainActivity.this, AddItemActivity.class),
+                        REQUEST_CODE);
             }
+        });
 
-            });
-
-        recyclerView.setAdapter(moneyAdapter);
+        recyclerView = findViewById(R.id.costsRecyclerView);
+        itemsAdapter = new ItemsAdapter();
+                recyclerView.setAdapter(itemsAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(),
                 LinearLayoutManager.VERTICAL, false));
 
-        moneyAdapter.setData(generateExpenses());
-
+        itemsAdapter.setData(generateExpenses());
+        itemsAdapter.addData(generateIncomes());
 
     }
 
-    private List<MoneyCellModel> generateExpenses() {
-        List<MoneyCellModel> moneyCellModels = new ArrayList<>();
-        moneyCellModels.add(new MoneyCellModel("Молоко", "70 ₽", R.color.expenseColor));
-        moneyCellModels.add(new MoneyCellModel("Зубная щётка", "70 ₽", R.color.expenseColor));
-        moneyCellModels.add(new MoneyCellModel("Сковородка с антипригарным покрытием",
-                "1670 ₽", R.color.expenseColor));
+    private List<Item> generateExpenses() {
+        List<Item> moneyCellModels = new ArrayList<>();
+        moneyCellModels.add(new Item("Молоко", 70, R.color.expenseColor));
+        moneyCellModels.add(new Item("Зубная щётка", 70, R.color.expenseColor));
+        moneyCellModels.add(new Item("Сковородка с антипригарным покрытием",
+                1670, R.color.expenseColor));
 
         return moneyCellModels;
     }
 
-    private List<MoneyCellModel> generateIncomes() {
-        List<MoneyCellModel> moneyCellModels = new ArrayList<>();
-        moneyCellModels.add(new MoneyCellModel("Зарплата.Июнь", "70000 ₽", R.color.incomeColor));
-        moneyCellModels.add(new MoneyCellModel("Премия", "7000 ₽", R.color.incomeColor));
-        moneyCellModels.add(new MoneyCellModel("Олег наконец-то вернул долг",
-                "300000 ₽", R.color.incomeColor));
+    private List<Item> generateIncomes() {
+        List<Item> moneyCellModels = new ArrayList<>();
+        moneyCellModels.add(new Item("Зарплата.Июнь", 70000, R.color.incomeColor));
+        moneyCellModels.add(new Item("Премия", 7000, R.color.incomeColor));
+        moneyCellModels.add(new Item("Олег наконец-то вернул долг",
+                300000, R.color.incomeColor));
 
         return moneyCellModels;
+    }
+    @Override
+    protected void onActivityResult(
+            final int requestCode, final int resultCode, @Nullable final Intent data
+    ) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        int price;
+        try {
+            price = Integer.parseInt(data.getStringExtra("price"));
+        } catch (NumberFormatException e) {
+            price = 0;
+        }
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+            itemsAdapter.addItem(new Item(data.getStringExtra("name"), price, R.color.colorPrimary));
+        }
     }
 }
 
