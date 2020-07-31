@@ -2,9 +2,10 @@
 <resources>
   <color name="colorPrimary">#3574FA</color>
   <color name="colorPrimaryDark">#3574FA</color>
-  <color name="colorAccent">#03DAC5</color>
+  <color name="colorAccent">#ffc107</color>
   <color name="textColorPrimary">#666664</color>
   <color name="expenseColor">#4A90E2</color>
   <color name="incomeColor">#7ED321</color>
   <color name="dividerColor">#F2F2F2</color>
-  </resources>
+  <color name="inactiveColor">#eaeaea</color>
+</resources>
