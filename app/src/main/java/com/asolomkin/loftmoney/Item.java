@@ -1,8 +1,8 @@
 package com.asolomkin.loftmoney;
 
 public class Item {
-    public String name;
-    public String price;
+    private String name;
+    private String price;
     private Integer color;
 
     public Item(String name, String price, Integer color) {

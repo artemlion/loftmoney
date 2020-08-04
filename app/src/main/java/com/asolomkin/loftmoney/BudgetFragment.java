@@ -1,32 +1,30 @@
 package com.asolomkin.loftmoney;
-
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import java.util.ArrayList;
 import java.util.List;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 
 public class BudgetFragment extends Fragment {
 
-    public static final int REQUEST_CODE = 100 ;
+
     RecyclerView recyclerView;
     private ItemsAdapter itemsAdapter;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
+//    private SwipeRefreshLayout mSwipeRefreshLayout;
+    CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     @Nullable
     @Override
@@ -39,43 +37,57 @@ public class BudgetFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.costsRecyclerView);
 
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-               // loadItems(); //метод не прописан
-            }
-        });
+
+//        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//            @Override
+//            public void onRefresh() {
+//               generateExpenses();
+//            }
+//        });
 
         itemsAdapter = new ItemsAdapter();
         recyclerView.setAdapter(itemsAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(),
                 LinearLayoutManager.VERTICAL, false));
 
-        generateExpenses();
+
 
         return view;
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        generateExpenses();
     }
 
     private void generateExpenses() {
-        List<Item> items = new ArrayList<>(); //тут дальше не знаю что делать
+        final List<Item> mItemsList = new ArrayList<>();
+        Disposable disposable = ((LoftApp) getActivity().getApplication()).getApi().getMoney("expense")
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<MoneyResponse>() {
+                    @Override
+                    public void accept(MoneyResponse moneyResponse) throws Exception {
+//                        itemsAdapter.clearItems();
+//                        mSwipeRefreshLayout.setRefreshing(false);
+                        for (MoneyItem moneyItem : moneyResponse.getMoneyItemList()) {
+                            mItemsList.add(Item.getInstance(moneyItem));
+                        }
 
+                        itemsAdapter.setData(mItemsList);
+
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+//                        mSwipeRefreshLayout.setRefreshing(false);
+
+                    }
+                });
+
+        compositeDisposable.add(disposable);
 
     }
-    @Override
-    public void onActivityResult(
-            final int requestCode, final int resultCode, @Nullable final Intent data
-    ) {
-        super.onActivityResult(requestCode, resultCode, data);
 
-        int price;
-        try {
-            price = Integer.parseInt(data.getStringExtra("price"));
-        } catch (NumberFormatException e) {
-            price = 0;
-        }
-        if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            itemsAdapter.addItem(new Item(data.getStringExtra("name"), "price", R.color.colorPrimary));
-        }
-    }
 }

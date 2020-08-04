@@ -25,7 +25,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         TabLayout tabLayout = findViewById(R.id.tabs);
-
         final ViewPager viewPager = findViewById(R.id.viewpager);
         viewPager.setAdapter(new BudgetPagerAdapter(getSupportFragmentManager(), FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT));
 
@@ -35,8 +34,9 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 final int activeFragmentIndex = viewPager.getCurrentItem();
                 Fragment activeFragment = getSupportFragmentManager().getFragments().get(activeFragmentIndex);
-                activeFragment.startActivityForResult(new Intent(MainActivity.this, AddItemActivity.class),
-                        BudgetFragment.REQUEST_CODE);
+                //видимо чего-то не хватает
+                Intent intent = new Intent(getApplicationContext(), AddItemActivity.class);
+                startActivity(intent);
 
             }
         });

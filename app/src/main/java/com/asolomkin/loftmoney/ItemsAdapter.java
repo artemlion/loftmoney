@@ -19,7 +19,7 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
 
     @NonNull
     @Override
-    public ItemViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int viewType) {
+    public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = View.inflate(parent.getContext(), R.layout.item_view, null);
 
         return new ItemViewHolder(itemView);
@@ -32,6 +32,11 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
 
     public void addItem(Item item) {
         mItemsList.add(item);
+        notifyDataSetChanged();
+    }
+
+    public void clearItems() {
+        mItemsList.clear();
         notifyDataSetChanged();
     }
 
@@ -64,7 +69,7 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
 
         public void bindItem(final Item item) {
             mNameView.setText(item.getName());
-            mPriceView.setText(mPriceView.getContext().getResources().getString(R.string.price_with_currency, String.valueOf(item.getPrice())));
+            mPriceView.setText(item.getPrice());
             mPriceView.setTextColor(ContextCompat.getColor(mPriceView.getContext(), item.getColor()));
         }
     }

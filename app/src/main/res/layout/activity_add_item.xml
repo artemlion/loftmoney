@@ -42,7 +42,7 @@
         android:layout_height="wrap_content"
         android:text="@string/add_button_title"
         android:enabled="false"
-        android:drawableLeft="@drawable/check_selector"
+        android:drawableStart="@drawable/check_selector"
         android:textColor="@color/add_button_text_color_selector"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
