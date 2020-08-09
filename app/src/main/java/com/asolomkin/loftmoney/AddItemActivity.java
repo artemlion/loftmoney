@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,10 +22,16 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 public class AddItemActivity extends AppCompatActivity {
+    public static String ANY_KEY = "any_key";
+
 
     private EditText mNameEditText;
     private EditText mPriceEditText;
     private Button addButton;
+
+    private String activePosition;
+
+
 
     String name;
     String value;
@@ -43,6 +50,20 @@ public class AddItemActivity extends AppCompatActivity {
         mPriceEditText = findViewById(R.id.price_edittext);
         addButton = findViewById(R.id.add_button);
 
+        try {
+            Intent intent = getIntent();
+            int tempPosition = intent.getIntExtra(ANY_KEY, 0);
+            if (tempPosition == 0)
+            {activePosition = "expense";
+            }
+
+
+            else {activePosition = "income";
+            }
+        } catch (Exception exception){
+            Log.e("error", exception.getLocalizedMessage());
+        }
+
         configureInputViews();
         configureExpenseAdding();
 
@@ -52,7 +73,8 @@ public class AddItemActivity extends AppCompatActivity {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                compositeDisposable.add(((LoftApp) getApplication()).getApi().addMoney(value, name, "expense")
+                String token = getSharedPreferences(getString(R.string.app_name), 0).getString(LoftApp.TOKEN_KEY, "");
+                compositeDisposable.add(((LoftApp) getApplication()).getApi().addMoney(token, value, name, activePosition)
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Action() {

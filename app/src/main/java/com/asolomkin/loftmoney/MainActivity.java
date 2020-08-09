@@ -32,10 +32,10 @@ public class MainActivity extends AppCompatActivity {
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final int activeFragmentIndex = viewPager.getCurrentItem();
-                Fragment activeFragment = getSupportFragmentManager().getFragments().get(activeFragmentIndex);
-                //видимо чего-то не хватает
+                int activeFragmentIndex = viewPager.getCurrentItem();
+
                 Intent intent = new Intent(getApplicationContext(), AddItemActivity.class);
+                intent.putExtra(AddItemActivity.ANY_KEY, activeFragmentIndex);
                 startActivity(intent);
 
             }
@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         @NonNull
         @Override
         public Fragment getItem(int position) {
-            return new BudgetFragment();
+            return BudgetFragment.newInstance(position);
         }
 
         @Override

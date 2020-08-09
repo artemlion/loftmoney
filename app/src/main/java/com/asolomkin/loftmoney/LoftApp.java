@@ -1,6 +1,7 @@
 package com.asolomkin.loftmoney;
 
 import android.app.Application;
+import android.content.SharedPreferences;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -11,10 +12,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class LoftApp extends Application {
 
     private Api api;
+    private AuthApi authApi;
+    public static String TOKEN_KEY = "token";
 
-    public Api getApi() {
-        return api;
-    }
+
+
 
     @Override
     public void onCreate() {
@@ -32,13 +34,24 @@ public class LoftApp extends Application {
 
         Retrofit retrofit = new Retrofit.Builder()
                 .client(okHttpClient)
-                .baseUrl("https://verdant-violet.glitch.me/")
+                .baseUrl("https://loftschool.com/android-api/basic/v1/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
 
         api = retrofit.create(Api.class);
+        authApi = retrofit.create(AuthApi.class);
+    }
 
+    public SharedPreferences getSharedPreferences() {
+        return getSharedPreferences(getString(R.string.app_name), 0);
+    }
 
+    public Api getApi() {
+        return api;
+    }
+
+    public AuthApi getAuthApi() {
+        return authApi;
     }
 }

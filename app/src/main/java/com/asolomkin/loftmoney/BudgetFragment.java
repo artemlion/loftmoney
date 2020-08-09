@@ -3,6 +3,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -22,9 +24,19 @@ public class BudgetFragment extends Fragment {
 
 
     RecyclerView recyclerView;
+    private static String ARG_1 = "arg_1";
+    private int position;
     private ItemsAdapter itemsAdapter;
-//    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
     CompositeDisposable compositeDisposable = new CompositeDisposable();
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            position = getArguments().getInt(ARG_1);
+             }
+    }
 
     @Nullable
     @Override
@@ -36,21 +48,20 @@ public class BudgetFragment extends Fragment {
 
 
         recyclerView = view.findViewById(R.id.costsRecyclerView);
+        mSwipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout);
 
 
-//        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-//            @Override
-//            public void onRefresh() {
-//               generateExpenses();
-//            }
-//        });
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+               generateExpenses();
+            }
+        });
 
         itemsAdapter = new ItemsAdapter();
         recyclerView.setAdapter(itemsAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(),
                 LinearLayoutManager.VERTICAL, false));
-
-
 
         return view;
     }
@@ -63,15 +74,17 @@ public class BudgetFragment extends Fragment {
 
     private void generateExpenses() {
         final List<Item> mItemsList = new ArrayList<>();
-        Disposable disposable = ((LoftApp) getActivity().getApplication()).getApi().getMoney("expense")
+        String token = ((LoftApp) getActivity().getApplication()).getSharedPreferences().getString(LoftApp.TOKEN_KEY, "");
+
+        Disposable disposable = ((LoftApp) getActivity().getApplication()).getApi().getMoney(token, String.valueOf(position))
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<MoneyResponse>() {
+                .subscribe(new Consumer <List <MoneyItem>>() {
                     @Override
-                    public void accept(MoneyResponse moneyResponse) throws Exception {
-//                        itemsAdapter.clearItems();
-//                        mSwipeRefreshLayout.setRefreshing(false);
-                        for (MoneyItem moneyItem : moneyResponse.getMoneyItemList()) {
+                    public void accept(List <MoneyItem> moneyItems) throws Exception {
+                        itemsAdapter.clearItems();
+                        mSwipeRefreshLayout.setRefreshing(false);
+                        for (MoneyItem moneyItem : moneyItems) {
                             mItemsList.add(Item.getInstance(moneyItem));
                         }
 
@@ -81,7 +94,8 @@ public class BudgetFragment extends Fragment {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
-//                        mSwipeRefreshLayout.setRefreshing(false);
+                        mSwipeRefreshLayout.setRefreshing(false);
+                        Toast.makeText(getContext(), throwable.getLocalizedMessage(), Toast.LENGTH_LONG).show();
 
                     }
                 });
@@ -89,5 +103,13 @@ public class BudgetFragment extends Fragment {
         compositeDisposable.add(disposable);
 
     }
+        public static BudgetFragment newInstance(int position) {
+        BudgetFragment budgetFragment = new BudgetFragment();
+        Bundle args = new Bundle();
+        args.putInt(ARG_1, position);
+        budgetFragment.setArguments(args);
+        return budgetFragment;
+    }
 
 }
+
