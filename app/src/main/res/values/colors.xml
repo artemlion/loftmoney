@@ -8,4 +8,5 @@
   <color name="incomeColor">#7ED321</color>
   <color name="dividerColor">#F2F2F2</color>
   <color name="inactiveColor">#eaeaea</color>
+  <color name="dark_grey_blue">#333f59</color>
 </resources>

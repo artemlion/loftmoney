@@ -1,6 +1,7 @@
 package com.asolomkin.loftmoney;
 
 public class Item {
+    private int id;
     private String name;
     private String price;
     private Integer color;
@@ -9,6 +10,14 @@ public class Item {
         this.name = name;
         this.price = price;
         this.color = color;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public static Item getInstance(MoneyItem moneyItem) {

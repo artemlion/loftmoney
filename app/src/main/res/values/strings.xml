@@ -9,6 +9,9 @@
     <string name="activity_main_toolbar_title">Учет бюджета</string>
     <string name="LoftMoney">LoftMoney</string>
     <string name="welcome_logo">Login</string>
+    <string name="selected">Selected: %1$s</string>
+    <string name="remove">Delete</string>
+    <string name="comfirmation">Do you really want to remove the selected items?</string>
 
 
 </resources>
