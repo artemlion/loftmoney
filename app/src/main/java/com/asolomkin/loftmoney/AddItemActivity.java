@@ -73,6 +73,7 @@ public class AddItemActivity extends AppCompatActivity {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                onBackPressed();
                 String token = getSharedPreferences(getString(R.string.app_name), 0).getString(LoftApp.TOKEN_KEY, "");
                 compositeDisposable.add(((LoftApp) getApplication()).getApi().addMoney(token, value, name, activePosition)
                         .subscribeOn(Schedulers.computation())
@@ -139,5 +140,11 @@ public class AddItemActivity extends AppCompatActivity {
     private void checkEditTextHasText() {
         addButton.setEnabled(!TextUtils.isEmpty(name) && !TextUtils.isEmpty(value));
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.static_animation, R.anim.zoom_out);
     }
 }

@@ -6,6 +6,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
@@ -19,7 +20,7 @@ import com.google.android.material.tabs.TabLayout;
 public class MainActivity extends AppCompatActivity {
     private TabLayout mTabLayout;
     private Toolbar mToolBar;
-    public static final String TOKEN = "token";
+//    public static final String TOKEN = "token";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), AddItemActivity.class);
                 intent.putExtra(AddItemActivity.ANY_KEY, activeFragmentIndex);
                 startActivity(intent);
+                overridePendingTransition(R.anim.zoom_in, R.anim.static_animation);
 
             }
         });
