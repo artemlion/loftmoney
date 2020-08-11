@@ -22,24 +22,18 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 public class AddItemActivity extends AppCompatActivity {
-    public static String ANY_KEY = "any_key";
 
+    public static String ANY_KEY = "any_key";
 
     private EditText mNameEditText;
     private EditText mPriceEditText;
     private Button addButton;
-
     private String activePosition;
-
-
 
     String name;
     String value;
 
     CompositeDisposable compositeDisposable = new CompositeDisposable();
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +51,6 @@ public class AddItemActivity extends AppCompatActivity {
             {activePosition = "expense";
             }
 
-
             else {activePosition = "income";
             }
         } catch (Exception exception){
@@ -66,7 +59,6 @@ public class AddItemActivity extends AppCompatActivity {
 
         configureInputViews();
         configureExpenseAdding();
-
     }
 
     private void configureExpenseAdding(){

@@ -34,6 +34,8 @@ public class BudgetFragment extends Fragment implements ItemsAdapterListener, Ac
 
 
     RecyclerView recyclerView;
+    private static final String COLOR_ID = "colorId";
+    private static final String TYPE = "fragmentType";
     private static String ARG_1 = "arg_1";
     private int position;
     private ItemsAdapter itemsAdapter;
@@ -43,12 +45,11 @@ public class BudgetFragment extends Fragment implements ItemsAdapterListener, Ac
     CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             position = getArguments().getInt(ARG_1);
-             }
-
+        }
     }
 
     @Nullable
@@ -87,7 +88,7 @@ public class BudgetFragment extends Fragment implements ItemsAdapterListener, Ac
         final List<Item> mItemsList = new ArrayList<>();
         String token = ((LoftApp) getActivity().getApplication()).getSharedPreferences().getString(LoftApp.TOKEN_KEY, "");
 
-        Disposable disposable = ((LoftApp) getActivity().getApplication()).getApi().getMoney(token, String.valueOf(position))
+        Disposable disposable = ((LoftApp) getActivity().getApplication()).getApi().getMoney(token, String.valueOf(position)) // ?
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer <List <MoneyItem>>() {
@@ -98,8 +99,9 @@ public class BudgetFragment extends Fragment implements ItemsAdapterListener, Ac
                         for (MoneyItem moneyItem : moneyItems) {
                             mItemsList.add(Item.getInstance(moneyItem));
                         }
-
                         itemsAdapter.setData(mItemsList);
+                        ((MainActivity)getActivity()).loadBalance();
+
 
                     }
                 }, new Consumer<Throwable>() {
@@ -114,11 +116,12 @@ public class BudgetFragment extends Fragment implements ItemsAdapterListener, Ac
         compositeDisposable.add(disposable);
 
     }
-        public static BudgetFragment newInstance(int position) {
+    public static BudgetFragment newInstance(final int colorId, final String type) {
         BudgetFragment budgetFragment = new BudgetFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_1, position);
-        budgetFragment.setArguments(args);
+        Bundle bundle = new Bundle();
+        bundle.putInt(COLOR_ID, colorId);
+        bundle.putString(TYPE, type);
+        budgetFragment.setArguments(bundle);
         return budgetFragment;
     }
 
