@@ -30,4 +30,8 @@ public interface Api {
     @POST("items/remove")
     Call<AuthResponse> removeItem(@Query("id") String id, @Query("auth-token") String token);
 
+
+    @GET("balance")
+    Call<BalanceResponce> getBalance(@Query("auth-token") String token);
+
 }

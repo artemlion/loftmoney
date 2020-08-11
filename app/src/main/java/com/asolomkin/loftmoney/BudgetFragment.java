@@ -48,6 +48,7 @@ public class BudgetFragment extends Fragment implements ItemsAdapterListener, Ac
         if (getArguments() != null) {
             position = getArguments().getInt(ARG_1);
              }
+
     }
 
     @Nullable

@@ -9,4 +9,6 @@
   <color name="dividerColor">#F2F2F2</color>
   <color name="inactiveColor">#eaeaea</color>
   <color name="dark_grey_blue">#333f59</color>
+  <color name="pale_orange">#ff9e57</color>
+  <color name="white_six">#efefef</color>
 </resources>
