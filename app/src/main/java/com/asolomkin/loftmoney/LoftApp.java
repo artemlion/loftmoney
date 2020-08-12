@@ -12,11 +12,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class LoftApp extends Application {
 
     private Api api;
-    private AuthApi authApi;
     public static String TOKEN_KEY = "token";
-
-
-
 
     @Override
     public void onCreate() {
@@ -36,11 +32,9 @@ public class LoftApp extends Application {
                 .client(okHttpClient)
                 .baseUrl("https://loftschool.com/android-api/basic/v1/")
                 .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
 
         api = retrofit.create(Api.class);
-        authApi = retrofit.create(AuthApi.class);
     }
 
     public SharedPreferences getSharedPreferences() {
@@ -51,7 +45,4 @@ public class LoftApp extends Application {
         return api;
     }
 
-    public AuthApi getAuthApi() {
-        return authApi;
-    }
 }

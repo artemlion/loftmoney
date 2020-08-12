@@ -4,11 +4,8 @@ import android.util.SparseBooleanArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,8 +14,10 @@ import java.util.List;
 public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHolder> {
 
     private List<Item> mItemsList = new ArrayList<>();
+    private final int colorId;
     private ItemsAdapterListener mListener;
     private SparseBooleanArray mSelectedItems = new SparseBooleanArray();
+
     public void clearSelections(){
         mSelectedItems.clear();
         notifyDataSetChanged();
@@ -54,6 +53,9 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
         }
         return result;
     }
+    public ItemsAdapter(final int colorId) {
+        this.colorId = colorId;
+    }
 
     public void setListener(final ItemsAdapterListener listener) {
         mListener = listener;
@@ -64,7 +66,7 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
     public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = View.inflate(parent.getContext(), R.layout.item_view, null);
 
-        return new ItemViewHolder(itemView);
+        return new ItemViewHolder(itemView, colorId);
     }
 
     @Override
@@ -88,23 +90,13 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
         return mItemsList.size();
     }
 
-    public void setData(List<Item> mItemsList) {
-        this.mItemsList.clear();
-        this.mItemsList.addAll(mItemsList);
-        notifyDataSetChanged();
-    }
-    public void addData(List<Item> mItemsList) {
-        this.mItemsList.addAll(mItemsList);
-        notifyDataSetChanged();
-    }
-
     static class ItemViewHolder extends RecyclerView.ViewHolder {
 
         private View mItemView;
         private TextView mNameView;
         private TextView mPriceView;
 
-        public ItemViewHolder(@NonNull final View itemView) {
+        public ItemViewHolder(@NonNull final View itemView, final int colorId) {
             super(itemView);
             mItemView = itemView;
             mNameView = itemView.findViewById(R.id.name_view);
@@ -114,8 +106,9 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
         public void bindItem(final Item item, final boolean isSelected) {
             mItemView.setSelected(isSelected);
             mNameView.setText(item.getName());
-            mPriceView.setText(item.getPrice());
-            mPriceView.setTextColor(ContextCompat.getColor(mPriceView.getContext(), item.getColor()));
+            mPriceView.setText(
+                    mPriceView.getContext().getResources().getString(R.string.price_with_currency, String.valueOf(item.getPrice()))
+            );
         }
 
         public void setListener(final ItemsAdapterListener listener, final Item item, final int position) {

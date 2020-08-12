@@ -1,7 +1,6 @@
 package com.asolomkin.loftmoney;
 
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +18,7 @@ import retrofit2.Response;
 public class BalanceFragment extends Fragment {
 
     private Api mApi;
-    private TextView myExpences;
+    private TextView myExpenses;
     private TextView myIncome;
     private TextView totalFinances;
     private BalanceView mDiagramView;
@@ -45,7 +44,7 @@ public class BalanceFragment extends Fragment {
             @Nullable final Bundle savedInstanceState
     ) {
         View view = inflater.inflate(R.layout.fragment_balance, null);
-        myExpences = view.findViewById(R.id.my_expences);
+        myExpenses = view.findViewById(R.id.my_expences);
         myIncome = view.findViewById(R.id.my_income);
         totalFinances = view.findViewById(R.id.txtBalanceFinanceValue);
         mDiagramView = view.findViewById(R.id.balanceView);
@@ -62,26 +61,26 @@ public class BalanceFragment extends Fragment {
 
     public void loadBalance() {
         String token = ((LoftApp) getActivity().getApplication()).getSharedPreferences().getString(LoftApp.TOKEN_KEY, ""); //?
-        final Call<BalanceResponce> responceCall = mApi.getBalance(token);
-        responceCall.enqueue(new Callback<BalanceResponce>() {
+        final Call<BalanceResponse> responseCall = mApi.getBalance(token);
+        responseCall.enqueue(new Callback<BalanceResponse>() {
 
             @Override
             public void onResponse(
-                    final Call<BalanceResponce> call, final Response<BalanceResponce> response
+                    final Call<BalanceResponse> call, final Response<BalanceResponse> response
             ) {
 
-                final float totalExpences = response.body().getTotalExpences();
+                final float totalExpenses = response.body().getTotalExpenses();
                 final float totalIncome = response.body().getTotalIncome();
 
-                myExpences.setText(String.valueOf(totalExpences));
+                myExpenses.setText(String.valueOf(totalExpenses));
                 myIncome.setText(String.valueOf(totalIncome));
-                totalFinances.setText(String.valueOf(totalIncome - totalExpences));
-                mDiagramView.update(totalExpences, totalIncome);
+                totalFinances.setText(String.valueOf(totalIncome - totalExpenses));
+                mDiagramView.update(totalExpenses, totalIncome);
                 mSwipeRefreshLayout.setRefreshing(false);
             }
 
             @Override
-            public void onFailure(final Call<BalanceResponce> call, final Throwable t) {
+            public void onFailure(final Call<BalanceResponse> call, final Throwable t) {
                 mSwipeRefreshLayout.setRefreshing(false);
             }
         });

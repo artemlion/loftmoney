@@ -2,12 +2,12 @@ package com.asolomkin.loftmoney;
 
 import com.google.gson.annotations.SerializedName;
 
-public class BalanceResponce {
+public class BalanceResponse {
 
     private String status;
 
     @SerializedName("total_expenses")
-    private float totalExpences;
+    private float totalExpenses;
 
     @SerializedName("total_income")
     private float totalIncome;
@@ -20,12 +20,12 @@ public class BalanceResponce {
         this.status = status;
     }
 
-    public float getTotalExpences() {
-        return totalExpences;
+    public float getTotalExpenses() {
+        return totalExpenses;
     }
 
-    public void setTotalExpences(final float totalExpences) {
-        this.totalExpences = totalExpences;
+    public void setTotalExpenses(final float totalExpenses) {
+        this.totalExpenses = totalExpenses;
     }
 
     public float getTotalIncome() {

@@ -3,19 +3,34 @@ package com.asolomkin.loftmoney;
 import com.google.gson.annotations.SerializedName;
 
 public class AuthResponse {
-    @SerializedName("status") String status;
-    @SerializedName("id") int userId;
-    @SerializedName("auth_token") String accessToken;
+    private String status;
+
+    private int id;
+
+    @SerializedName("auth_token")
+    private String token;
 
     public String getStatus() {
         return status;
     }
 
-    public int getUserId() {
-        return userId;
+    public void setStatus(final String status) {
+        this.status = status;
     }
 
-    public String getAccessToken() {
-        return accessToken;
+    public int getId() {
+        return id;
+    }
+
+    public void setId(final int id) {
+        this.id = id;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(final String token) {
+        this.token = token;
     }
 }

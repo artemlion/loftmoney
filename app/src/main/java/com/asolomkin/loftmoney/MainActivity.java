@@ -6,13 +6,11 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.ActionMode;
 import android.view.View;
-import androidx.annotation.Nullable;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 public class MainActivity extends AppCompatActivity {
@@ -22,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
     private TabLayout mTabLayout;
     private Toolbar mToolBar;
     private FloatingActionButton mFloatingActionButton;
-//    public static final String TOKEN = "token";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
         mToolBar = findViewById(R.id.toolbar);
         final ViewPager viewPager = findViewById(R.id.viewpager);
         viewPager.setOffscreenPageLimit(3);
-//        viewPager.setAdapter(new BudgetPagerAdapter(getSupportFragmentManager(), FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT));
         final BudgetPagerAdapter adapter = new BudgetPagerAdapter(
                 getSupportFragmentManager(),
                 FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
@@ -67,15 +64,14 @@ public class MainActivity extends AppCompatActivity {
 
         mFloatingActionButton = findViewById(R.id.fab);
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+
             @Override
-            public void onClick(View view) {
-                int activeFragmentIndex = viewPager.getCurrentItem();
-
-                Intent intent = new Intent(getApplicationContext(), AddItemActivity.class);
-                intent.putExtra(AddItemActivity.ANY_KEY, activeFragmentIndex);
-                startActivity(intent);
+            public void onClick(final View v) {
+                final int activeFragmentIndex = viewPager.getCurrentItem();
+                Fragment activeFragment = getSupportFragmentManager().getFragments().get(activeFragmentIndex);
+                activeFragment.startActivityForResult(new Intent(MainActivity.this, AddItemActivity.class),
+                        BudgetFragment.REQUEST_CODE);
                 overridePendingTransition(R.anim.zoom_in, R.anim.static_animation);
-
             }
         });
 
@@ -84,18 +80,23 @@ public class MainActivity extends AppCompatActivity {
         mTabLayout.getTabAt(1).setText(R.string.income);
         mTabLayout.getTabAt(2).setText(R.string.balance);
 
+        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+            if (fragment instanceof BudgetFragment) {
+                ((BudgetFragment)fragment).loadItems();
+            }
+        }
     }
+
     public void loadBalance() {
         for (Fragment fragment : getSupportFragmentManager().getFragments()) {
             if (fragment instanceof BalanceFragment) {
                 ((BalanceFragment)fragment).loadBalance();
-                mFloatingActionButton.hide();
             }
         }
     }
 
     @Override
-    public void onActionModeStarted(ActionMode mode) {
+    public void onActionModeStarted(final ActionMode mode) {
         super.onActionModeStarted(mode);
         mTabLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.dark_grey_blue));
         mToolBar.setBackgroundColor(ContextCompat.getColor(this, R.color.dark_grey_blue));
@@ -103,10 +104,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onActionModeFinished(ActionMode mode) {
+    public void onActionModeFinished(final ActionMode mode) {
         super.onActionModeFinished(mode);
-        mTabLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary));
-        mToolBar.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary));
+        mTabLayout.setBackgroundColor(ContextCompat.getColor(this,R.color.colorPrimary));
+        mToolBar.setBackgroundColor(ContextCompat.getColor(this,R.color.colorPrimary));
         mFloatingActionButton.show();
     }
 
@@ -136,9 +137,5 @@ public class MainActivity extends AppCompatActivity {
             return 3;
         }
     }
-
-
-
-
 }
 

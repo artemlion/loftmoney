@@ -1,6 +1,8 @@
 package com.asolomkin.loftmoney;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.ActionMode;
@@ -33,23 +35,29 @@ import retrofit2.Response;
 public class BudgetFragment extends Fragment implements ItemsAdapterListener, ActionMode.Callback{
 
 
-    RecyclerView recyclerView;
+    public static final int REQUEST_CODE = 100;
     private static final String COLOR_ID = "colorId";
     private static final String TYPE = "fragmentType";
-    private static String ARG_1 = "arg_1";
-    private int position;
     private ItemsAdapter itemsAdapter;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private ActionMode mActionMode;
-    private Api mApi;
-    CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private Api api;
+
+    public static BudgetFragment newInstance(final int colorId, final String type) {
+        BudgetFragment budgetFragment = new BudgetFragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt(COLOR_ID, colorId);
+        bundle.putString(TYPE, type);
+        budgetFragment.setArguments(bundle);
+        return budgetFragment;
+    }
+
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            position = getArguments().getInt(ARG_1);
-        }
+        api = ((LoftApp)getActivity().getApplication()).getApi();
+        loadItems();
     }
 
     @Nullable
@@ -61,15 +69,17 @@ public class BudgetFragment extends Fragment implements ItemsAdapterListener, Ac
 
         View view = inflater.inflate(R.layout.fragment_budget, null);
 
-        recyclerView = view.findViewById(R.id.costsRecyclerView);
+        RecyclerView recyclerView = view.findViewById(R.id.costsRecyclerView);
         mSwipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+
             @Override
             public void onRefresh() {
-               generateExpenses();
+                loadItems();
             }
         });
-        itemsAdapter = new ItemsAdapter();
+
+        itemsAdapter = new ItemsAdapter(getArguments().getInt(COLOR_ID));
         itemsAdapter.setListener(this);
         recyclerView.setAdapter(itemsAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(),
@@ -79,54 +89,74 @@ public class BudgetFragment extends Fragment implements ItemsAdapterListener, Ac
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        generateExpenses();
-    }
+    public void onActivityResult(
+            final int requestCode, final int resultCode, @Nullable final Intent data
+    ) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-    private void generateExpenses() {
-        final List<Item> mItemsList = new ArrayList<>();
-        String token = ((LoftApp) getActivity().getApplication()).getSharedPreferences().getString(LoftApp.TOKEN_KEY, "");
+        if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            int price;
+            try {
+                price = Integer.parseInt(data.getStringExtra("price"));
+            } catch (NumberFormatException e) {
+                price = 0;
+            }
+            final int realPrice = price;
+            final String name = data.getStringExtra("name");
 
-        Disposable disposable = ((LoftApp) getActivity().getApplication()).getApi().getMoney(token, String.valueOf(position)) // ?
-                .subscribeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer <List <MoneyItem>>() {
-                    @Override
-                    public void accept(List <MoneyItem> moneyItems) throws Exception {
-                        itemsAdapter.clearItems();
-                        mSwipeRefreshLayout.setRefreshing(false);
-                        for (MoneyItem moneyItem : moneyItems) {
-                            mItemsList.add(Item.getInstance(moneyItem));
-                        }
-                        itemsAdapter.setData(mItemsList);
-                        ((MainActivity)getActivity()).loadBalance();
+            final String token = ((LoftApp) getActivity().getApplication()).getSharedPreferences().getString(LoftApp.TOKEN_KEY, "");
 
+            Call<AuthResponse> call = api.addItem(new AddItemRequest(name, getArguments().getString(TYPE), price), token);
+            call.enqueue(new Callback<AuthResponse>() {
 
+                @Override
+                public void onResponse(
+                        final Call<AuthResponse> call, final Response<AuthResponse> response
+                ) {
+                    if (response.body().getStatus().equals("success")) {
+                        loadItems();
                     }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        mSwipeRefreshLayout.setRefreshing(false);
-                        Toast.makeText(getContext(), throwable.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                }
 
-                    }
-                });
+                @Override
+                public void onFailure(final Call<AuthResponse> call, final Throwable t) {
+                    t.printStackTrace();
+                }
+            });
 
-        compositeDisposable.add(disposable);
+        }
+    }
+
+    public void loadItems() {
+        final String token = ((LoftApp) getActivity().getApplication()).getSharedPreferences().getString(LoftApp.TOKEN_KEY, "");
+
+        Call<List<Item>> items = api.getItems(getArguments().getString(TYPE), token);
+        items.enqueue(new Callback<List<Item>>() {
+
+            @Override
+            public void onResponse(
+                    final Call<List<Item>> call, final Response<List<Item>> response
+            ) {
+                itemsAdapter.clearItems();
+                mSwipeRefreshLayout.setRefreshing(false);
+                List<Item> items = response.body();
+                for (Item item : items) {
+                    itemsAdapter.addItem(item);
+                }
+                ((MainActivity)getActivity()).loadBalance();
+            }
+
+            @Override
+            public void onFailure(final Call<List<Item>> call, final Throwable t) {
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+        });
 
     }
-    public static BudgetFragment newInstance(final int colorId, final String type) {
-        BudgetFragment budgetFragment = new BudgetFragment();
-        Bundle bundle = new Bundle();
-        bundle.putInt(COLOR_ID, colorId);
-        bundle.putString(TYPE, type);
-        budgetFragment.setArguments(bundle);
-        return budgetFragment;
-    }
+
 
     @Override
-    public void onItemClick(Item item, int position) {
+    public void onItemClick(final Item item, final int position) {
         itemsAdapter.clearItem(position);
         if (mActionMode != null) {
             mActionMode.setTitle(getString(R.string.selected, String.valueOf(itemsAdapter.getSelectedSize())));
@@ -134,7 +164,7 @@ public class BudgetFragment extends Fragment implements ItemsAdapterListener, Ac
     }
 
     @Override
-    public void onItemLongClick(Item item, int position) {
+    public void onItemLongClick(final Item item, final int position) {
         if (mActionMode == null) {
             getActivity().startActionMode(this);
         }
@@ -180,14 +210,13 @@ public class BudgetFragment extends Fragment implements ItemsAdapterListener, Ac
 
     private void removeItems() {
         String token = ((LoftApp) getActivity().getApplication()).getSharedPreferences().getString(LoftApp.TOKEN_KEY, "");
-        //String token = PreferenceManager.getDefaultSharedPreferences(getContext()).getString(MainActivity.TOKEN, ""); //или MainActivity??
         List<Integer> selectedItems = itemsAdapter.getSelectedItemsIds();
         for (Integer itemId : selectedItems) {
-            Call<AuthResponse> call = mApi.removeItem(String.valueOf(itemId.intValue()), token);
+            Call<AuthResponse> call = api.removeItem(String.valueOf(itemId.intValue()), token);
             call.enqueue(new Callback<AuthResponse>() {
                 @Override
-                public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
-                    generateExpenses();
+                public void onResponse(final Call<AuthResponse> call, final Response<AuthResponse> response) {
+                    loadItems();
                     itemsAdapter.clearSelections();
                 }
 
