@@ -12,21 +12,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import java.util.ArrayList;
 import java.util.List;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -82,8 +73,6 @@ public class BudgetFragment extends Fragment implements ItemsAdapterListener, Ac
         itemsAdapter = new ItemsAdapter(getArguments().getInt(COLOR_ID));
         itemsAdapter.setListener(this);
         recyclerView.setAdapter(itemsAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(),
-                LinearLayoutManager.VERTICAL, false));
 
         return view;
     }
@@ -104,7 +93,7 @@ public class BudgetFragment extends Fragment implements ItemsAdapterListener, Ac
             final int realPrice = price;
             final String name = data.getStringExtra("name");
 
-            final String token = ((LoftApp) getActivity().getApplication()).getSharedPreferences().getString(LoftApp.TOKEN_KEY, "");
+            final String token = PreferenceManager.getDefaultSharedPreferences(getContext()).getString(MainActivity.TOKEN, "");
 
             Call<AuthResponse> call = api.addItem(new AddItemRequest(name, getArguments().getString(TYPE), price), token);
             call.enqueue(new Callback<AuthResponse>() {
@@ -128,7 +117,7 @@ public class BudgetFragment extends Fragment implements ItemsAdapterListener, Ac
     }
 
     public void loadItems() {
-        final String token = ((LoftApp) getActivity().getApplication()).getSharedPreferences().getString(LoftApp.TOKEN_KEY, "");
+        final String token = PreferenceManager.getDefaultSharedPreferences(getContext()).getString(MainActivity.TOKEN, "");
 
         Call<List<Item>> items = api.getItems(getArguments().getString(TYPE), token);
         items.enqueue(new Callback<List<Item>>() {
@@ -175,30 +164,30 @@ public class BudgetFragment extends Fragment implements ItemsAdapterListener, Ac
     }
 
     @Override
-    public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+    public boolean onCreateActionMode(final ActionMode actionMode, final Menu menu) {
         mActionMode = actionMode;
         return true;
     }
 
     @Override
-    public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
+    public boolean onPrepareActionMode(final ActionMode actionMode, final Menu menu) {
         MenuInflater menuInflater = new MenuInflater(getActivity());
         menuInflater.inflate(R.menu.menu_delete, menu);
         return true;
     }
 
     @Override
-    public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
+    public boolean onActionItemClicked(final ActionMode actionMode, final MenuItem menuItem) {
         if (menuItem.getItemId() == R.id.remove) {
             new AlertDialog.Builder(getContext())
                     .setMessage(R.string.comfirmation)
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             removeItems();
                         }
                     })
-                    .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
 
@@ -209,13 +198,14 @@ public class BudgetFragment extends Fragment implements ItemsAdapterListener, Ac
     }
 
     private void removeItems() {
-        String token = ((LoftApp) getActivity().getApplication()).getSharedPreferences().getString(LoftApp.TOKEN_KEY, "");
+        String token = PreferenceManager.getDefaultSharedPreferences(getContext()).getString(MainActivity.TOKEN, "");
         List<Integer> selectedItems = itemsAdapter.getSelectedItemsIds();
         for (Integer itemId : selectedItems) {
             Call<AuthResponse> call = api.removeItem(String.valueOf(itemId.intValue()), token);
             call.enqueue(new Callback<AuthResponse>() {
                 @Override
-                public void onResponse(final Call<AuthResponse> call, final Response<AuthResponse> response) {
+                public void onResponse(final Call<AuthResponse> call, final Response<AuthResponse> response
+                ) {
                     loadItems();
                     itemsAdapter.clearSelections();
                 }
@@ -224,7 +214,7 @@ public class BudgetFragment extends Fragment implements ItemsAdapterListener, Ac
                 public void onFailure(Call<AuthResponse> call, Throwable t) {
 
                 }
-            });//?
+            });
         }
     }
 

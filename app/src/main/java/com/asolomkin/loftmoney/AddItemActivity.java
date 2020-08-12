@@ -8,6 +8,8 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 
@@ -15,13 +17,13 @@ public class AddItemActivity extends AppCompatActivity {
 
     private EditText mNameEditText;
     private EditText mPriceEditText;
-    private Button addButton;
+    private Button mAddButton;
 
-    private String name;
-    private String value;
+    private String mName;
+    private String mPrice;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_item);
 
@@ -50,7 +52,7 @@ public class AddItemActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(final Editable editable) {
-                name = editable.toString();
+                mName = editable.toString();
                 checkEditTextHasText();
             }
         });
@@ -79,21 +81,21 @@ public class AddItemActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(final Editable editable) {
-                value = editable.toString();
+                mPrice = editable.toString();
                 checkEditTextHasText();
             }
         });
 
-        addButton = findViewById(R.id.add_button);
-        addButton.setOnClickListener(new View.OnClickListener() {
+        mAddButton = findViewById(R.id.add_button);
+        mAddButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(final View v) {
 
-                if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(value)) {
+                if (!TextUtils.isEmpty(mName) && !TextUtils.isEmpty(mPrice)) {
                     setResult(
                             RESULT_OK,
-                            new Intent().putExtra("name", name).putExtra("price", value));
+                            new Intent().putExtra("name", mName).putExtra("price", mPrice));
                     finish();
                 }
             }
@@ -101,7 +103,7 @@ public class AddItemActivity extends AppCompatActivity {
     }
 
     public void checkEditTextHasText() {
-        addButton.setEnabled(!TextUtils.isEmpty(name) && !TextUtils.isEmpty(value));
+        mAddButton.setEnabled(!TextUtils.isEmpty(mName) && !TextUtils.isEmpty(mPrice));
     }
 
     @Override

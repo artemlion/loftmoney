@@ -17,6 +17,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String EXPENSE = "expense";
     public static final String INCOME = "income";
+    public static final String TOKEN = "token";
     private TabLayout mTabLayout;
     private Toolbar mToolBar;
     private FloatingActionButton mFloatingActionButton;

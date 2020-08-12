@@ -6,17 +6,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
+import android.provider.Settings;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
-
-import java.util.Random;
-
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -24,42 +17,52 @@ import retrofit2.Response;
 public class LoginActivity extends AppCompatActivity {
 
     private Api api;
-    Button loginButtonView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         api = ((LoftApp)getApplication()).getApi();
-        loginButtonView = findViewById(R.id.loginButtonView);
+        Button authButton = findViewById(R.id.enter_button);
+        authButton.setOnClickListener(new View.OnClickListener() {
 
-        auth();
+            @Override
+            public void onClick(final View view) {
+                finish();
+                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+            }
+        });
+
+        final String token = PreferenceManager.getDefaultSharedPreferences(this).getString(MainActivity.TOKEN, "");
+        if (TextUtils.isEmpty(token)) {
+            auth();
+        } else {
+            finish();
+            startActivity(new Intent(this, MainActivity.class));
+        }
+
     }
 
     private void auth() {
-        loginButtonView.setOnClickListener(new View.OnClickListener() {
+        String androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+        Call<AuthResponse> auth = api.auth(androidId);
+        auth.enqueue(new Callback<AuthResponse>() {
+
             @Override
-            public void onClick(View view) {
-                String socialUserId = String.valueOf(new Random().nextInt());
-                Call<AuthResponse> auth = api.auth(socialUserId);
-                auth.enqueue(new Callback<AuthResponse>() {
+            public void onResponse(
+                    final Call<AuthResponse> call, final Response<AuthResponse> response
+            ) {
+                SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(
+                        LoginActivity.this).edit();
+                editor.putString(MainActivity.TOKEN, response.body().getToken());
+                editor.apply();
+            }
 
-                    @Override
-                    public void onResponse(
-                            final Call<AuthResponse> call, final Response<AuthResponse> response
-                    ) {
-                        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(
-                                LoginActivity.this).edit();
-                        editor.putString(LoftApp.TOKEN_KEY, response.body().getToken());
-                        editor.apply();
-                    }
+            @Override
+            public void onFailure(final Call<AuthResponse> call, final Throwable t) {
 
-                    @Override
-                    public void onFailure(final Call<AuthResponse> call, final Throwable t) {
-
-                    }
-                });
             }
         });
     }
 }
+

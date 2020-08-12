@@ -1,10 +1,12 @@
 package com.asolomkin.loftmoney;
 
+import android.content.Context;
 import android.util.SparseBooleanArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +15,7 @@ import java.util.List;
 
 public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHolder> {
 
-    private List<Item> mItemsList = new ArrayList<>();
+    private List<Item> mItemsList = new ArrayList<Item>();
     private final int colorId;
     private ItemsAdapterListener mListener;
     private SparseBooleanArray mSelectedItems = new SparseBooleanArray();
@@ -63,7 +65,7 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
 
     @NonNull
     @Override
-    public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ItemViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, int viewType) {
         View itemView = View.inflate(parent.getContext(), R.layout.item_view, null);
 
         return new ItemViewHolder(itemView, colorId);
@@ -101,6 +103,8 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
             mItemView = itemView;
             mNameView = itemView.findViewById(R.id.name_view);
             mPriceView = itemView.findViewById(R.id.price_view);
+            final Context context = mPriceView.getContext();
+            mPriceView.setTextColor(ContextCompat.getColor(context, colorId));
         }
 
         public void bindItem(final Item item, final boolean isSelected) {
