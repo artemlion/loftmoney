@@ -1,4 +1,4 @@
-package com.asolomkin.loftmoney;
+package com.asolomkin.loftmoney.fragments;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -8,6 +8,8 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+
+import com.asolomkin.loftmoney.R;
 
 public class BalanceView extends View {
 

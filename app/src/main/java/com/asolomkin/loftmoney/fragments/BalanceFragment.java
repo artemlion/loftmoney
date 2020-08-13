@@ -1,4 +1,4 @@
-package com.asolomkin.loftmoney;
+package com.asolomkin.loftmoney.fragments;
 
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -11,6 +11,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.asolomkin.loftmoney.LoftApp;
+import com.asolomkin.loftmoney.MainActivity;
+import com.asolomkin.loftmoney.R;
+import com.asolomkin.loftmoney.remote.Api;
+import com.asolomkin.loftmoney.remote.BalanceResponse;
 
 import retrofit2.Call;
 import retrofit2.Callback;

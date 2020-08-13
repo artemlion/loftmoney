@@ -14,10 +14,37 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    buildTypes {
+    signingConfigs {
         release {
-            minifyEnabled false
+            storeFile file ("release.keystore")
+            storePassword '290790lion'
+            keyAlias 'artemlion'
+            keyPassword '290790lion'
+        }
+    }
+
+    buildTypes {
+
+        debug {
+            resValue("string", "app_name", "loftmoney-debug")
+        }
+        release {
+            signingConfig signingConfigs.release
+            resValue("string", "app_name", "LoftMoney")
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    flavorDimensions 'target'
+
+    productFlavors {
+        mobile {
+            resValue("String", "app_name", "loftmoney-beta")
+        }
+
+        beta {
+            resValue("String", "app_name", "loftmoney-beta")
         }
     }
 }

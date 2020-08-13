@@ -1,4 +1,4 @@
-package com.asolomkin.loftmoney;
+package com.asolomkin.loftmoney.fragments;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -15,8 +15,20 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.asolomkin.loftmoney.LoftApp;
+import com.asolomkin.loftmoney.MainActivity;
+import com.asolomkin.loftmoney.R;
+import com.asolomkin.loftmoney.cells.Item;
+import com.asolomkin.loftmoney.cells.ItemsAdapter;
+import com.asolomkin.loftmoney.cells.ItemsAdapterListener;
+import com.asolomkin.loftmoney.remote.AddItemRequest;
+import com.asolomkin.loftmoney.remote.Api;
+import com.asolomkin.loftmoney.remote.AuthResponse;
+
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -73,6 +85,10 @@ public class BudgetFragment extends Fragment implements ItemsAdapterListener, Ac
         itemsAdapter = new ItemsAdapter(getArguments().getInt(COLOR_ID));
         itemsAdapter.setListener(this);
         recyclerView.setAdapter(itemsAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(),
+                LinearLayoutManager.VERTICAL, false));
+
+
 
         return view;
     }
@@ -185,6 +201,7 @@ public class BudgetFragment extends Fragment implements ItemsAdapterListener, Ac
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             removeItems();
+
                         }
                     })
                     .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -208,6 +225,7 @@ public class BudgetFragment extends Fragment implements ItemsAdapterListener, Ac
                 ) {
                     loadItems();
                     itemsAdapter.clearSelections();
+
                 }
 
                 @Override

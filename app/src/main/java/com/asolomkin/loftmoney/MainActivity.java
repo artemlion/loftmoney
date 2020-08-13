@@ -11,6 +11,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.ActionMode;
 import android.view.View;
+
+import com.asolomkin.loftmoney.fragments.BalanceFragment;
+import com.asolomkin.loftmoney.fragments.BudgetFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 public class MainActivity extends AppCompatActivity {
@@ -72,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
                 Fragment activeFragment = getSupportFragmentManager().getFragments().get(activeFragmentIndex);
                 activeFragment.startActivityForResult(new Intent(MainActivity.this, AddItemActivity.class),
                         BudgetFragment.REQUEST_CODE);
+
                 overridePendingTransition(R.anim.zoom_in, R.anim.static_animation);
             }
         });

@@ -10,6 +10,10 @@ import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+
+import com.asolomkin.loftmoney.remote.Api;
+import com.asolomkin.loftmoney.remote.AuthResponse;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -39,6 +43,7 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             finish();
             startActivity(new Intent(this, MainActivity.class));
+            overridePendingTransition(R.anim.zoom_in, R.anim.static_animation);
         }
 
     }

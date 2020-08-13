@@ -22,12 +22,14 @@ public class AddItemActivity extends AppCompatActivity {
     private String mName;
     private String mPrice;
 
+
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_item);
 
         mNameEditText = findViewById(R.id.name_edittext);
+
         mNameEditText.addTextChangedListener(new TextWatcher() {
 
             @Override

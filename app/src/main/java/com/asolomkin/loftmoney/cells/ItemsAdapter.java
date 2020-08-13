@@ -1,4 +1,4 @@
-package com.asolomkin.loftmoney;
+package com.asolomkin.loftmoney.cells;
 
 import android.content.Context;
 import android.util.SparseBooleanArray;
@@ -8,6 +8,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.asolomkin.loftmoney.R;
+
 import java.util.ArrayList;
 import java.util.List;
 

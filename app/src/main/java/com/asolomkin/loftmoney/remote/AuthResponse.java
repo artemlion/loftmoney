@@ -1,4 +1,4 @@
-package com.asolomkin.loftmoney;
+package com.asolomkin.loftmoney.remote;
 
 import com.google.gson.annotations.SerializedName;
 

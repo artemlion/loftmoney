@@ -1,6 +1,6 @@
-package com.asolomkin.loftmoney;
+package com.asolomkin.loftmoney.remote;
 
-class AddItemRequest {
+public class AddItemRequest {
 
     private String name;
     private String type;

@@ -1,6 +1,9 @@
 package com.asolomkin.loftmoney;
 
 import android.app.Application;
+
+import com.asolomkin.loftmoney.remote.Api;
+
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;

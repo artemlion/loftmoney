@@ -1,4 +1,6 @@
-package com.asolomkin.loftmoney;
+package com.asolomkin.loftmoney.remote;
+
+import com.asolomkin.loftmoney.cells.Item;
 
 import java.util.List;
 import retrofit2.Call;
